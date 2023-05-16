@@ -1,0 +1,173 @@
+#include <Windows.h>
+#include <string>
+
+
+HWND g_hWindow, g_hGenderLabel, g_hAgeLabel, g_hBloodSugarLabel;
+HWND g_hGenderCombo, g_hAgeEdit, g_hBloodSugarEdit, g_hResultLabel;
+
+
+const char g_szClassName[] = "BloodSugarWindowClass";
+const int g_nWidth = 400;
+const int g_nHeight = 200;
+const int g_nMargin = 10;
+
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+void CreateControls(HWND hWnd);
+int GetGenderSelection(HWND hWnd);
+int GetAge(HWND hWnd);
+float GetBloodSugarLevel(HWND hWnd);
+std::string GetResult(float fBloodSugarLevel, int nGender, int nAge);
+
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+
+    WNDCLASSEX wc = { };
+    wc.cbSize = sizeof(wc);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.lpszClassName = g_szClassName;
+    if (!RegisterClassEx(&wc)) {
+        MessageBox(NULL, "Window registration failed.", "Error", MB_ICONERROR | MB_OK);
+        return 0;
+    }
+
+
+    g_hWindow = CreateWindowEx(0, g_szClassName, "Blood Sugar Checker", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, g_nWidth, g_nHeight, NULL, NULL, hInstance, NULL);
+    if (g_hWindow == NULL) {
+        MessageBox(NULL, "Window creation failed.", "Error", MB_ICONERROR | MB_OK);
+        return 0;
+    }
+
+
+    ShowWindow(g_hWindow, nCmdShow);
+    UpdateWindow(g_hWindow);
+
+
+    MSG msg = { };
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return (int)msg.wParam;
+}
+
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_CREATE:
+        CreateControls(hWnd);
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK) {
+            int nGender = GetGenderSelection(hWnd);
+            int nAge = GetAge(hWnd);
+            float fBloodSugarLevel = GetBloodSugarLevel(hWnd);
+            std::string sResult = GetResult(fBloodSugarLevel, nGender, nAge);
+            SetWindowText(g_hResultLabel, sResult.c_str());
+        }
+        break;
+    default:
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+    }
+
+    return 0;
+}
+
+
+void CreateControls(HWND hWnd) {
+
+    g_hGenderLabel = CreateWindowEx(0, "STATIC", "Пол:", WS_CHILD | WS_VISIBLE, g_nMargin, g_nMargin, 50, 20, hWnd, NULL, NULL, NULL);
+
+
+    g_hGenderCombo = CreateWindowEx(0, "COMBOBOX", "", WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, g_nMargin + 60, g_nMargin, 100, 200, hWnd, NULL, NULL, NULL);
+    SendMessage(g_hGenderCombo, CB_ADDSTRING, 0, (LPARAM)"Муж");
+    SendMessage(g_hGenderCombo, CB_ADDSTRING, 0, (LPARAM)"Жен");
+    SendMessage(g_hGenderCombo, CB_SETCURSEL, 0, 0);
+
+
+    g_hAgeLabel = CreateWindowEx(0, "STATIC", "Возраст:", WS_CHILD | WS_VISIBLE, g_nMargin, g_nMargin * 3, 50, 20, hWnd, NULL, NULL, NULL);
+
+
+    g_hAgeEdit = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", "", WS_CHILD | WS_VISIBLE | ES_NUMBER, g_nMargin + 60, g_nMargin * 3, 80, 20, hWnd, NULL, NULL, NULL);
+
+
+    g_hBloodSugarLabel = CreateWindowEx(0, "STATIC", "Уровень сахара   крови(mmol/L):", WS_CHILD | WS_VISIBLE, g_nMargin, g_nMargin * 5, 150, 20, hWnd, NULL, NULL, NULL);
+
+
+    g_hBloodSugarEdit = CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", "", WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_AUTOHSCROLL, g_nMargin + 160, g_nMargin * 5, 80, 20, hWnd, NULL, NULL, NULL);
+
+
+    g_hResultLabel = CreateWindowEx(WS_EX_CLIENTEDGE, "STATIC", "", WS_CHILD | WS_VISIBLE, g_nMargin, g_nMargin * 7, g_nWidth - g_nMargin * 2, 20, hWnd, NULL, NULL, NULL);
+
+
+    CreateWindowEx(0, "BUTTON", "OK", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, g_nWidth - 50 - g_nMargin, g_nHeight - 50 - g_nMargin, 50, 30, hWnd, (HMENU)IDOK, NULL, NULL);
+}
+
+
+int GetGenderSelection(HWND hWnd) {
+    return SendMessage(g_hGenderCombo, CB_GETCURSEL, 0, 0);
+}
+
+
+int GetAge(HWND hWnd) {
+    char szAge[10];
+    GetWindowText(g_hAgeEdit, szAge, sizeof(szAge));
+    return atoi(szAge);
+}
+
+
+float GetBloodSugarLevel(HWND hWnd) {
+    char szLevel[10];
+    GetWindowText(g_hBloodSugarEdit, szLevel, sizeof(szLevel));
+    return atof(szLevel);
+}
+
+
+std::string GetResult(float fBloodSugarLevel, int nGender, int nAge) {
+    if (nGender == 0) {  // Male
+        if (nAge < 15) {
+            if (fBloodSugarLevel < 3) {
+                return "Уровень сахара низкий.";
+            }
+            else if (fBloodSugarLevel > 6) {
+                return "Уровень сахара высокий.";
+            }
+        }
+        else {
+            if (fBloodSugarLevel < 3) {
+                return "Уровень сахара низкий.";
+            }
+            else if (fBloodSugarLevel > 7) {
+                return "Уровень сахара высокий.";
+            }
+        }
+    }
+    else {  // Female
+        if (nAge < 15) {
+            if (fBloodSugarLevel < 3) {
+                return "Уровень сахара низкий.";
+            }
+            else if (fBloodSugarLevel > 5) {
+                return "Уровень сахара высокий.";
+            }
+        }
+        else {
+            if (fBloodSugarLevel < 3) {
+                return "Уровень сахара низкий.";
+            }
+            else if (fBloodSugarLevel > 5) {
+                return "Уровень сахара высокий.";
+            }
+        }
+    }
+    return "Уровень сахара нормальный.";
+}
+
