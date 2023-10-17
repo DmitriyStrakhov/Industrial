@@ -1,0 +1,11 @@
+const reverseDigits = (number) => {
+  // Преобразуем число в строку, затем разбиваем строку на массив символов
+  // и используем метод reverse() для обращения порядка элементов массива
+  // и метод map() для преобразования каждого символа обратно в число
+  return number.toString().split('').reverse().map(Number);
+};
+
+// Пример использования функции
+const randomNonNegativeNumber = 12345;
+const reversedDigitsArray = reverseDigits(randomNonNegativeNumber);
+console.log("Цифры в обратном порядке: " + reversedDigitsArray); // Выводит: "Цифры в обратном порядке"
