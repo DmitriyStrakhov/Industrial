@@ -1,0 +1,14 @@
+const countDivisors = (n) => {
+  let divisorCount = 0;
+  for (let i = 1; i <= n; i++) {
+    if (n % i === 0) {
+      divisorCount++;
+    }
+  }
+  return divisorCount;
+};
+
+// Пример использования функции
+const number = 11;
+const numberOfDivisors = countDivisors(number);
+console.log(`Число ${number} имеет ${numberOfDivisors} делителей.`); // Выводит: "Число делителей."
