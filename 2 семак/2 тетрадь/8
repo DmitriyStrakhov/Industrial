@@ -1,0 +1,6 @@
+function isTrianglePossible(a, b, c) {
+  return a + b > c && a + c > b && b + c > a;
+}
+
+// Примеры использования функции
+console.log(isTrianglePossible(7, 4, 5)); 
