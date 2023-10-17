@@ -1,0 +1,12 @@
+function nextPerfectSquare(n) {
+  const squareRoot = Math.sqrt(n);
+  if (Number.isInteger(squareRoot)) {
+    const nextSquare = Math.pow(squareRoot + 1, 2);
+    return nextSquare;
+  } else {
+    return -1;
+  }
+}
+
+// Примеры использования функции
+console.log(nextPerfectSquare(25)); 
