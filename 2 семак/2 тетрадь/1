@@ -1,0 +1,18 @@
+function calculateAverage(numbers) {
+  if (numbers.length === 0) {
+    return 0;
+  }
+  
+  var sum = 0;
+  for (var i = 0; i < numbers.length; i++) {
+    sum += numbers[i];
+  }
+  
+  var average = sum / numbers.length;
+  return average;
+}
+
+// Пример использования функции
+var numbersArray = [1, 2, 3, 4, 5];
+var averageValue = calculateAverage(numbersArray);// Проверяет наличие аргументов
+console.log("Среднее значение: " + averageValue); // Выводит: "Среднее значение:
