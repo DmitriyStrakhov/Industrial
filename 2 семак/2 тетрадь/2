@@ -1,0 +1,9 @@
+// Стрелочная функция для определения четности числа
+const checkEvenOdd = (number) => {
+  return number % 2 === 0 ? "Even" : "Odd";
+};
+
+// Пример использования функции
+const inputNumber = 6;
+const result = checkEvenOdd(inputNumber);
+console.log(`Число ${inputNumber} является: ${result}`); // Выводи:  Even или Odd"
