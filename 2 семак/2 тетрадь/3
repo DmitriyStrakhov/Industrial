@@ -1,0 +1,10 @@
+function centuryFromYear(year) {
+  // Для определения столетия используем математическую операцию Math.ceil
+  // чтобы округлить результат вверх до ближайшего целого числа
+  return Math.ceil(year / 100);
+}
+
+// использования функции
+var year = 1805; // вводится год
+var century = centuryFromYear(year);
+console.log("Год " + year + " находится в " + century + " столетии.");
